@@ -73,8 +73,4 @@ Route::prefix('transaction')->middleware('auth')->group(function () {
 Route::prefix('currency')->middleware('auth')->group(function () {
     Route::get('/', [CurrencyController::class, 'index'])->name('currency.index');
     Route::patch('/{user}', [CurrencyController::class, 'update'])->name('currency.update');
-//    Route::get('/create', [TransactionController::class, 'create'])->name('transaction.create');
-//    Route::get('/{transaction}', [TransactionController::class, 'show'])->name('transaction.show');
-//    Route::get('/edit/{transaction}', [TransactionController::class, 'edit'])->name('transaction.edit');
-//    Route::post('/', [TransactionController::class, 'store'])->name('transaction.store');
 });

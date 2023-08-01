@@ -6,16 +6,18 @@ use App\Http\Requests\AccountStoreRequest;
 use App\Http\Requests\AccountUpdateRequest;
 use App\Models\Account;
 use App\Models\Currency;
-use Illuminate\Http\Request;
+use App\Services\Account\AccountService;
+use App\Services\Currency\CurrencyService;
 
 class AccountController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    private $accountService;
+    private $currencyService;
+
+    public function __construct(AccountService $accountService, CurrencyService $currencyService)
     {
-        dd('index');
+        $this->accountService = $accountService;
+        $this->currencyService = $currencyService;
     }
 
     /**
@@ -23,7 +25,7 @@ class AccountController extends Controller
      */
     public function create()
     {
-        $currencies = Currency::all();
+        $currencies = $this->currencyService->getCurrency();
 
         return view('account.create', compact('currencies'));
     }
@@ -33,12 +35,12 @@ class AccountController extends Controller
      */
     public function store(AccountStoreRequest $request)
     {
-        $userId = auth()->user()->id;
+        $userId = $request->user()->id;
 
-        $data = $request->validated();
-        $data['user_id'] = $userId;
-
-        Account::firstOrCreate($data);
+        $this->accountService->store(
+            $request->validated(),
+            $userId
+        );
 
         return redirect()->route('user');
     }
@@ -48,7 +50,7 @@ class AccountController extends Controller
      */
     public function show(Account $account)
     {
-        $account = $account->load('currency', 'transactions');
+        $account = $this->accountService->show($account);
 
         return view('account.show', compact('account'));
     }
@@ -58,8 +60,8 @@ class AccountController extends Controller
      */
     public function edit(Account $account)
     {
-        $data = $account->load('currency');
-        $currencies = Currency::all();
+        $data = $this->accountService->edit($account);
+        $currencies = $this->currencyService->getCurrency();
 
         return view('account.edit', compact('data','currencies'));
     }
@@ -69,8 +71,10 @@ class AccountController extends Controller
      */
     public function update(AccountUpdateRequest $request, Account $account)
     {
-        $data = $request->validated();
-        $account->update($data);
+        $this->accountService->update(
+            $request->validated(),
+            $account
+        );
 
         return view('account.show', compact('account'));
     }
@@ -80,7 +84,9 @@ class AccountController extends Controller
      */
     public function destroy(Account $account)
     {
-        $account->delete();
+        $this->accountService->delete(
+            $account
+        );
 
         return redirect()->route('user');
     }

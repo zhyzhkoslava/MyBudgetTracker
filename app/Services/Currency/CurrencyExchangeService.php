@@ -1,18 +1,18 @@
 <?php
 
 
-namespace App\Services;
+namespace App\Services\Currency;
 
 
 use Exception;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
 
-class CurrencyService
+class CurrencyExchangeService
 {
     private $apiUrl = 'https://api.api-ninjas.com/v1/convertcurrency';
 
-    public function getCurrencies($have, $want, $amount)
+    public function convert($have, $want, $amount)
     {
         $cacheKey = "convert_{$have}_{$want}_{$amount}";
 

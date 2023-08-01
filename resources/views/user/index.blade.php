@@ -3,7 +3,7 @@
 @section('content')
     <table class="table">
         <h1>Hi <b>{{$userInfo->name}}</b>!</h1>
-        <h3>You have {{$accountAmount}} account(s)</h3>
+        <h3>You have {{ $userInfo->accounts->count()}} account(s)</h3>
         <a href="{{ route('user.edit') }}" class="btn btn-primary">Edit Profile</a>
         <a href="{{ route('account.create') }}" class="btn btn-info">Add Account</a>
         <a href="{{ route('transaction.index') }}" class="btn btn-success">Transactions</a>
@@ -22,7 +22,7 @@
             @php
                 $number=0;
             @endphp
-            @foreach($accounts as $account)
+            @foreach($userInfo->accounts as $account)
                 <tr>
                     <th scope="row">{{++$number}}</th>
                     <th>{{$account->name}}</th>
